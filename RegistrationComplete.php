@@ -37,6 +37,7 @@
         <div>
             <div id = "d1" align = "center">
                 <h1> Registration Completed Successfully</h1>
+				<a href="Login.html">Go back to login page </a>
             </div>
 
     <?php

@@ -14,7 +14,7 @@
             {
                 height: 25px;
                 width: auto;
-                background-color: blue;
+                background-color: yellow;
                 padding-top: 10px;
                 padding-left: 10px;
                 margin-top: 10px;
@@ -25,26 +25,28 @@
     <body>
         <div id = "d0">
             <h1>
-                Partcipants List
+                Participants List
             </h1>
         </div>
         <?php
             $con = mysqli_connect("localhost", "root", "", "stackhack");
-            $last = mysqli_insert_id($con);
-
-            for($i = 0; $i <= $last; $i++)
+            $s = mysqli_query($con, "insert into participants(full_name, mobno, email, pwd, idimage, regtype, tickets, regno) values('', '', '', '', '', '', '', '')");
+            $last = mysqli_insert_id($con);          
+            for($i = 1; $i < 5; $i++)
             {
+                $s = mysqli_query($con, "select * from participants where id = '$i'");
+                if($s == false)
+                    break;
+                $r = mysqli_fetch_array($s);
         ?>
                 <div id = "d1">
-        <?php
-                $s = mysqli_query($con, "select * from participants where id = '$i'");
-                $r = mysqli_fetch_array($s);
-                echo ($i + 1)."  ".$r['full_name']."\t".$r['email'];                
-                            
+        <?php        
+                echo($i."  ".$r['full_name']."\t".$r['email']);                                       
         ?>
                 </div>
         <?php
             }
+            $s = mysqli_query($con, "delete from participant where id = '$last'");
         ?>
         
     </body>

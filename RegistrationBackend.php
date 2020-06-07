@@ -27,49 +27,40 @@
                                     //Getting the ID Image File info. 
 
         //$idimage = $_FILES['idimage'];
-        $imageName = $_FILES['idimage']['name'];
-        $imageTmpName = $_FILES['idimage']['tmp_name'];
-        $imageSize = $_FILES['idimage']['size'];
-        $imageType = $_FILES['idimage']['type'];
-        $imageError = $_FILES['idimage']['error'];
-        $imageExt = explode(".", $imageName);
-        $imageExt = strtolower($imageExt);
-        $error = 0;
-        $allowed = array('.jpg', '.jpeg', '.png');
-        echo($imageExt);
-        
-
-        if(in_array($imageExt, $allowed))
+        if(isset($_POST['regbtn']) && isset($_FILES['idimage']))
         {
-            if($imageError === 0)
+            $imageName = $_FILES['idimage']['name'];
+            $imageTmpName = $_FILES['idimage']['tmp_name'];
+            $imageSize = $_FILES['idimage']['size'];
+            $imageType = $_FILES['idimage']['type'];
+            $imageError = $_FILES['idimage']['error'];
+            $imageExt = pathinfo($imageName, PATHINFO_EXTENSION);
+            $allowed = array('jpg', 'jpeg', 'png');
+            if(isset($imageName) && !empty($imageName))
             {
-                if($imageSize < 1000000)
+                if(in_array($imageExt, $allowed))
                 {
                     $imageNewName = $reg.".".$imageExt;
                     $imageDest = 'uploads\\'.$imageNewName;
                     move_uploaded_file($imageTmpName, $imageDest);
                 }
-                else
-                    $error = 1;
-            }
-            else
-                $error = 2;
-        }
+            }         
+            
+        }   
         else
-            $error = 3;
+            $imageNewName = "REG".$reg."jpg";     
 
+        $s = mysqli_query($con, "insert into participants(full_name, mobno, email, pwd, idimage, regtype, tickets, regno) 
+                                             values('$fname', '$mobno', '$email', '$pwd', '$imageNewName', '$regtype', '$ticket', '$reg')");
         
-
-        $s = mysqli_query($con, "insert into participants(full_name, mobno, email, pwd, idimage, regtype, tickets, regno) values('$fname', '$mobno', '$email', '$pwd', '$imageNewName', '$regtype', '$ticket', '$reg')");
-        
-        if($s > 0 && $error == 0)
+        if($s > 0)
         {
             $r = mysqli_query($con, "select * from participants where email = '$email'");
             $_SESSION['stackhack'] = $r;
-            header("location:RegistrationSummary.php?msg=done");
+            header("location:RegistrationComplete.php?msg=done");
         }
-        //else
-            //header("location:RegistrationSummary.php?err=$error");
+        else
+            header("location:RegistrationComplete.php?msg=notdone");
     }
 
 ?>
